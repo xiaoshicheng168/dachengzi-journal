@@ -20,9 +20,9 @@ const work = [
 ];
 
 const notes = [
-  { date: "JUL 2026", title: "如何让 AI 真正成为思考搭档", kind: "AI 共创" },
-  { date: "JUN 2026", title: "一个医药商业问题，如何被重新讲清楚", kind: "行业观察" },
-  { date: "MAY 2026", title: "从紧张到真诚：我的舞台表达手记", kind: "表达练习" },
+  { date: "JUL 2026", title: "一个医药人，为什么开始认真用 AI", kind: "AI 共创", href: "/articles/why-a-pharma-person-started-using-ai" },
+  { date: "JUL 2026", title: "AI 最危险的，不是答错", kind: "AI 观察", href: "/articles/ai-cognitive-delegation" },
+  { date: "JUN 2026", title: "不带手机出门的一天", kind: "生活手记", href: "/articles/a-day-without-my-phone" },
 ];
 
 export default function Home() {
@@ -98,12 +98,13 @@ export default function Home() {
           <div className="notes-intro"><p className="eyebrow">持续写，持续想</p><h2>近期<br /><i>作品</i></h2><p>这里是一些还在生长的答案。</p></div>
           <div className="note-list">
             {notes.map((note, index) => (
-              <a href="#contact" key={note.title}>
+              <a href={note.href} key={note.title}>
                 <span className="note-date">{note.date}</span>
                 <span className="note-title"><small>{note.kind}</small>{note.title}</span>
                 <span className="note-index">0{index + 1} ↗</span>
               </a>
             ))}
+            <a className="all-articles" href="/articles">查看全部 6 篇文章 <span>→</span></a>
           </div>
         </div>
       </section>
