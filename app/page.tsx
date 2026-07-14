@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const work = [
   {
     number: "01",
@@ -98,13 +100,13 @@ export default function Home() {
           <div className="notes-intro"><p className="eyebrow">持续写，持续想</p><h2>近期<br /><i>作品</i></h2><p>这里是一些还在生长的答案。</p></div>
           <div className="note-list">
             {notes.map((note, index) => (
-              <a href={note.href} key={note.title}>
+              <Link href={note.href} key={note.title}>
                 <span className="note-date">{note.date}</span>
                 <span className="note-title"><small>{note.kind}</small>{note.title}</span>
                 <span className="note-index">0{index + 1} ↗</span>
-              </a>
+              </Link>
             ))}
-            <a className="all-articles" href="/articles">查看全部 6 篇文章 <span>→</span></a>
+            <Link className="all-articles" href="/articles">查看全部文章 <span>→</span></Link>
           </div>
         </div>
       </section>

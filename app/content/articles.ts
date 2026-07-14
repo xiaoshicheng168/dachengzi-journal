@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 export type ArticleBlock = { heading?: string; paragraphs: string[]; quote?: string };
 
 export type Article = {
@@ -10,7 +13,7 @@ export type Article = {
   blocks: ArticleBlock[];
 };
 
-export const articles: Article[] = [
+const builtInArticles: Article[] = [
   {
     slug: "why-a-pharma-person-started-using-ai",
     title: "一个医药人，为什么开始认真用 AI",
@@ -90,6 +93,92 @@ export const articles: Article[] = [
     ],
   },
 ];
+
+function parseFrontmatter(source: string) {
+  if (!source.startsWith("---")) return { data: {} as Record<string, string>, body: source };
+  const end = source.indexOf("\n---", 3);
+  if (end === -1) return { data: {} as Record<string, string>, body: source };
+  const data: Record<string, string> = {};
+  for (const line of source.slice(3, end).split("\n")) {
+    const separator = line.indexOf(":");
+    if (separator > 0) {
+      data[line.slice(0, separator).trim()] = line
+        .slice(separator + 1)
+        .trim()
+        .replace(/^['\"]|['\"]$/g, "");
+    }
+  }
+  return { data, body: source.slice(end + 4).trim() };
+}
+
+function markdownToBlocks(markdown: string): ArticleBlock[] {
+  const blocks: ArticleBlock[] = [];
+  let current: ArticleBlock = { paragraphs: [] };
+  let paragraph: string[] = [];
+  const flushParagraph = () => {
+    if (paragraph.length) current.paragraphs.push(paragraph.join(" "));
+    paragraph = [];
+  };
+  const flushBlock = () => {
+    flushParagraph();
+    if (current.heading || current.paragraphs.length || current.quote) blocks.push(current);
+    current = { paragraphs: [] };
+  };
+  for (const rawLine of markdown.split("\n")) {
+    const line = rawLine.trim();
+    if (line.startsWith("# ")) continue;
+    if (line.startsWith("## ")) {
+      flushBlock();
+      current.heading = line.slice(3).trim();
+      continue;
+    }
+    if (line.startsWith("> ")) {
+      flushParagraph();
+      current.quote = line.slice(2).trim();
+      continue;
+    }
+    if (!line) {
+      flushParagraph();
+      continue;
+    }
+    paragraph.push(
+      line
+        .replace(/^[-*]\s+/, "• ")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/`([^`]+)`/g, "$1"),
+    );
+  }
+  flushBlock();
+  return blocks;
+}
+
+function loadMarkdownArticles(): Article[] {
+  const directory = path.join(process.cwd(), "content", "articles");
+  if (!fs.existsSync(directory)) return [];
+  return fs
+    .readdirSync(directory)
+    .filter((name) => name.endsWith(".md") && !name.startsWith("_"))
+    .map((name) => {
+      const source = fs.readFileSync(path.join(directory, name), "utf8");
+      const { data, body } = parseFrontmatter(source);
+      return {
+        slug: data.slug || name.replace(/\.md$/, ""),
+        title: data.title || name.replace(/\.md$/, ""),
+        category: data.category || "思考手记",
+        date: data.date || "",
+        readingTime: data.readingTime || "5 MIN READ",
+        summary:
+          data.summary ||
+          body.split("\n").find((line) => line.trim() && !line.startsWith("#"))?.trim() ||
+          "",
+        blocks: markdownToBlocks(body),
+      };
+    });
+}
+
+const merged = new Map(builtInArticles.map((article) => [article.slug, article]));
+for (const article of loadMarkdownArticles()) merged.set(article.slug, article);
+export const articles = Array.from(merged.values()).sort((a, b) => b.date.localeCompare(a.date));
 
 export function getArticle(slug: string) {
   return articles.find((article) => article.slug === slug);
