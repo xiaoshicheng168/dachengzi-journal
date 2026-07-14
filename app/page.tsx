@@ -27,6 +27,14 @@ const notes = [
   { date: "JUN 2026", title: "不带手机出门的一天", kind: "生活手记", href: "/articles/a-day-without-my-phone" },
 ];
 
+const socialLinks = [
+  { label: "抖音", note: "DOUYIN", href: "" },
+  { label: "TikTok", note: "GLOBAL", href: "" },
+  { label: "微信公众号", note: "心想世程", href: "" },
+  { label: "小红书", note: "REDNOTE", href: "" },
+  { label: "视频号", note: "WECHAT VIDEO", href: "" },
+];
+
 export default function Home() {
   return (
     <main>
@@ -39,8 +47,8 @@ export default function Home() {
           <a href="#about">关于我</a>
           <a href="#work">我在做的事</a>
           <a href="#notes">近期作品</a>
-          <a href="#socials">社交主页</a>
           <a href="#contact">联系我</a>
+          <a href="#socials">社交主页</a>
         </nav>
       </header>
 
@@ -112,56 +120,31 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="socials" id="socials">
-        <div className="section-meta"><span>FOLLOW ALONG</span><span>04 / 05</span></div>
-        <div className="socials-heading">
-          <div>
-            <p className="eyebrow">在更多地方相遇</p>
-            <h2>找到大橙子🍊</h2>
-          </div>
-          <p>短视频主页正在准备中。链接补充后，这里会成为一键到达的入口。</p>
-        </div>
-        <div className="social-list" aria-label="大橙子的社交媒体主页">
-          <article className="social-card">
-            <span className="social-mark" aria-hidden="true">抖</span>
-            <div><small>CHINA · SHORT VIDEO</small><h3>抖音</h3><p>大橙子的中文短视频主页</p></div>
-            <span className="social-status">链接待补充</span>
-          </article>
-          <article className="social-card">
-            <span className="social-mark social-mark-latin" aria-hidden="true">T</span>
-            <div><small>GLOBAL · SHORT VIDEO</small><h3>TikTok</h3><p>大橙子的海外短视频主页</p></div>
-            <span className="social-status">链接待补充</span>
-          </article>
-          <article className="social-card">
-            <span className="social-mark" aria-hidden="true">微</span>
-            <div><small>WECHAT · LONGFORM</small><h3>微信公众号</h3><p>心想世程 · 深度文章与持续思考</p></div>
-            <span className="social-status">二维码待补充</span>
-          </article>
-          <article className="social-card">
-            <span className="social-mark" aria-hidden="true">红</span>
-            <div><small>REDNOTE · LIFESTYLE</small><h3>小红书</h3><p>大橙子的图文与短视频主页</p></div>
-            <span className="social-status">链接待补充</span>
-          </article>
-          <article className="social-card">
-            <span className="social-mark" aria-hidden="true">视</span>
-            <div><small>WECHAT · VIDEO</small><h3>视频号</h3><p>大橙子的微信短视频主页</p></div>
-            <span className="social-status">二维码待补充</span>
-          </article>
-          <article className="social-card social-card-more">
-            <span className="social-mark social-mark-latin" aria-hidden="true">+</span>
-            <div><small>MORE · TO COME</small><h3>更多平台</h3><p>为未来的内容阵地预留一个位置</p></div>
-            <span className="social-status">持续更新</span>
-          </article>
-        </div>
-      </section>
-
       <section className="contact" id="contact">
-        <div className="section-meta"><span>LET’S CONNECT</span><span>05 / 05</span></div>
+        <div className="section-meta"><span>LET’S CONNECT</span><span>04 / 05</span></div>
         <div className="contact-inner">
           <p className="contact-kicker">如果你也在思考 AI、医药商业或表达成长——</p>
           <h2>欢迎来找我<br /><i>聊一聊。</i></h2>
           <a className="contact-link" href="mailto:834455850@qq.com">834455850@qq.com <span>↗</span></a>
           <p className="contact-note">微信公众号：<span>心想世程</span></p>
+        </div>
+      </section>
+
+      <section className="social-strip" id="socials">
+        <div className="social-strip-heading">
+          <div><small>FOLLOW DACHENGZI</small><h2>在更多地方，找到大橙子🍊</h2></div>
+          <span>05 / 05</span>
+        </div>
+        <div className="social-links" aria-label="大橙子的社交媒体主页">
+          {socialLinks.map((item, index) => item.href ? (
+            <a href={item.href} key={item.label} target="_blank" rel="noreferrer">
+              <em>0{index + 1}</em><span><small>{item.note}</small>{item.label}</span><b>↗</b>
+            </a>
+          ) : (
+            <span className="social-link-pending" key={item.label} title="链接待补充">
+              <em>0{index + 1}</em><span><small>{item.note}</small>{item.label}</span><b>·</b>
+            </span>
+          ))}
         </div>
       </section>
 
