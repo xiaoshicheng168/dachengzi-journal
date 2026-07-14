@@ -33,6 +33,9 @@ const socialLinks = [
   { label: "微信公众号", note: "心想世程", href: "" },
   { label: "小红书", note: "REDNOTE", href: "" },
   { label: "视频号", note: "WECHAT VIDEO", href: "" },
+  { label: "Instagram", note: "VISUAL STORIES", href: "" },
+  { label: "Facebook", note: "GLOBAL COMMUNITY", href: "" },
+  { label: "WhatsApp", note: "DIRECT MESSAGE", href: "" },
 ];
 
 export default function Home() {
