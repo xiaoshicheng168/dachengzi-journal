@@ -39,6 +39,7 @@ export default function Home() {
           <a href="#about">关于我</a>
           <a href="#work">我在做的事</a>
           <a href="#notes">近期作品</a>
+          <a href="#socials">社交主页</a>
           <a href="#contact">联系我</a>
         </nav>
       </header>
@@ -66,7 +67,7 @@ export default function Home() {
       </section>
 
       <section className="about" id="about">
-        <div className="section-meta"><span>PROFILE</span><span>01 / 04</span></div>
+        <div className="section-meta"><span>PROFILE</span><span>01 / 05</span></div>
         <div className="about-grid">
           <h2>我更关心<br />“人如何发生改变”</h2>
           <div className="about-copy">
@@ -77,7 +78,7 @@ export default function Home() {
       </section>
 
       <section className="work" id="work">
-        <div className="section-meta"><span>CURRENT PRACTICE</span><span>02 / 04</span></div>
+        <div className="section-meta"><span>CURRENT PRACTICE</span><span>02 / 05</span></div>
         <div className="section-heading">
           <h2>我在做的事</h2>
           <p>三条线索，最后都回到同一件事：<br />帮助人看见问题，也看见自己。</p>
@@ -95,7 +96,7 @@ export default function Home() {
       </section>
 
       <section className="notes" id="notes">
-        <div className="section-meta"><span>RECENT NOTES</span><span>03 / 04</span></div>
+        <div className="section-meta"><span>RECENT NOTES</span><span>03 / 05</span></div>
         <div className="notes-grid">
           <div className="notes-intro"><p className="eyebrow">持续写，持续想</p><h2>近期<br /><i>作品</i></h2><p>这里是一些还在生长的答案。</p></div>
           <div className="note-list">
@@ -111,8 +112,51 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="socials" id="socials">
+        <div className="section-meta"><span>FOLLOW ALONG</span><span>04 / 05</span></div>
+        <div className="socials-heading">
+          <div>
+            <p className="eyebrow">在更多地方相遇</p>
+            <h2>找到大橙子🍊</h2>
+          </div>
+          <p>短视频主页正在准备中。链接补充后，这里会成为一键到达的入口。</p>
+        </div>
+        <div className="social-list" aria-label="大橙子的社交媒体主页">
+          <article className="social-card">
+            <span className="social-mark" aria-hidden="true">抖</span>
+            <div><small>CHINA · SHORT VIDEO</small><h3>抖音</h3><p>大橙子的中文短视频主页</p></div>
+            <span className="social-status">链接待补充</span>
+          </article>
+          <article className="social-card">
+            <span className="social-mark social-mark-latin" aria-hidden="true">T</span>
+            <div><small>GLOBAL · SHORT VIDEO</small><h3>TikTok</h3><p>大橙子的海外短视频主页</p></div>
+            <span className="social-status">链接待补充</span>
+          </article>
+          <article className="social-card">
+            <span className="social-mark" aria-hidden="true">微</span>
+            <div><small>WECHAT · LONGFORM</small><h3>微信公众号</h3><p>心想世程 · 深度文章与持续思考</p></div>
+            <span className="social-status">二维码待补充</span>
+          </article>
+          <article className="social-card">
+            <span className="social-mark" aria-hidden="true">红</span>
+            <div><small>REDNOTE · LIFESTYLE</small><h3>小红书</h3><p>大橙子的图文与短视频主页</p></div>
+            <span className="social-status">链接待补充</span>
+          </article>
+          <article className="social-card">
+            <span className="social-mark" aria-hidden="true">视</span>
+            <div><small>WECHAT · VIDEO</small><h3>视频号</h3><p>大橙子的微信短视频主页</p></div>
+            <span className="social-status">二维码待补充</span>
+          </article>
+          <article className="social-card social-card-more">
+            <span className="social-mark social-mark-latin" aria-hidden="true">+</span>
+            <div><small>MORE · TO COME</small><h3>更多平台</h3><p>为未来的内容阵地预留一个位置</p></div>
+            <span className="social-status">持续更新</span>
+          </article>
+        </div>
+      </section>
+
       <section className="contact" id="contact">
-        <div className="section-meta"><span>LET’S CONNECT</span><span>04 / 04</span></div>
+        <div className="section-meta"><span>LET’S CONNECT</span><span>05 / 05</span></div>
         <div className="contact-inner">
           <p className="contact-kicker">如果你也在思考 AI、医药商业或表达成长——</p>
           <h2>欢迎来找我<br /><i>聊一聊。</i></h2>
