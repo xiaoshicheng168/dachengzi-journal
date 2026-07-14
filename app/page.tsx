@@ -113,8 +113,8 @@ export default function Home() {
         <div className="contact-inner">
           <p className="contact-kicker">如果你也在思考 AI、医药商业或表达成长——</p>
           <h2>欢迎来找我<br /><i>聊一聊。</i></h2>
-          <a className="contact-link" href="mailto:hello@example.com">hello@example.com <span>↗</span></a>
-          <p className="contact-note">将这个邮箱替换为你的联系方式，也可以放微信、公众号或小红书。</p>
+          <a className="contact-link" href="mailto:834455850@qq.com">834455850@qq.com <span>↗</span></a>
+          <p className="contact-note">微信公众号：<span>心想世程</span></p>
         </div>
       </section>
 
