@@ -1,4 +1,20 @@
 import Link from "next/link";
+import { articles } from "./content/articles";
+import { siteUrl, siteDescription, authorName } from "./content/site";
+
+const NOTE_MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+function formatNoteDate(date: string) {
+  const [year, month] = date.split(".");
+  return year && month ? `${NOTE_MONTHS[Number(month) - 1]} ${year}` : date;
+}
+
+const notes = articles.slice(0, 3).map((article) => ({
+  date: formatNoteDate(article.date),
+  title: article.title,
+  kind: article.category,
+  href: `/articles/${article.slug}`,
+}));
 
 const work = [
   {
@@ -21,12 +37,6 @@ const work = [
   },
 ];
 
-const notes = [
-  { date: "JUL 2026", title: "一个医药人，为什么开始认真用 AI", kind: "AI 共创", href: "/articles/why-a-pharma-person-started-using-ai" },
-  { date: "JUL 2026", title: "AI 最危险的，不是答错", kind: "AI 观察", href: "/articles/ai-cognitive-delegation" },
-  { date: "JUN 2026", title: "不带手机出门的一天", kind: "生活手记", href: "/articles/a-day-without-my-phone" },
-];
-
 const socialLinks = [
   { label: "抖音", note: "DOUYIN", href: "" },
   { label: "TikTok", note: "GLOBAL", href: "" },
@@ -39,8 +49,26 @@ const socialLinks = [
 ];
 
 export default function Home() {
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: authorName,
+    alternateName: "Dachengzi",
+    url: siteUrl,
+    description: siteDescription,
+    email: "mailto:834455850@qq.com",
+  };
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }} />
+      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+        <defs>
+          <filter id="ink-rough">
+            <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="9" />
+          </filter>
+        </defs>
+      </svg>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="大橙子首页">
           <span>大橙子🍊</span>
@@ -56,6 +84,10 @@ export default function Home() {
       </header>
 
       <section className="hero" id="top">
+        <svg className="ink-circle" viewBox="0 0 400 400" aria-hidden="true">
+          <circle cx="200" cy="200" r="148" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeDasharray="790 140" transform="rotate(-65 200 200)" filter="url(#ink-rough)" />
+        </svg>
+        <span className="hero-vertical" aria-hidden="true">把真实的经验，变成可以行动的方法</span>
         <div className="hero-kicker">
           <span>PERSONAL JOURNAL</span><span>NO. 001</span>
         </div>
@@ -67,7 +99,7 @@ export default function Home() {
             <a className="text-link" href="#about">读读我的故事 <span>↘</span></a>
           </div>
           <aside className="hero-index" aria-label="网站目录">
-            <div className="seal" aria-hidden="true"><span>真诚</span><span>·</span><span>共创</span></div>
+            <div className="seal" aria-hidden="true"><span>真诚</span><span>共创</span></div>
             <p className="index-label">IN THIS ISSUE</p>
             <a href="#about"><em>01</em><span>从真实经历出发</span><b>→</b></a>
             <a href="#work"><em>02</em><span>三件正在做的事</span><b>→</b></a>
@@ -78,6 +110,7 @@ export default function Home() {
       </section>
 
       <section className="about" id="about">
+        <span className="ghost-num" aria-hidden="true">01</span>
         <div className="section-meta"><span>PROFILE</span><span>01 / 05</span></div>
         <div className="about-grid">
           <h2>我更关心<br />“人如何发生改变”</h2>
@@ -89,6 +122,7 @@ export default function Home() {
       </section>
 
       <section className="work" id="work">
+        <span className="ghost-num" aria-hidden="true">02</span>
         <div className="section-meta"><span>CURRENT PRACTICE</span><span>02 / 05</span></div>
         <div className="section-heading">
           <h2>我在做的事</h2>
@@ -107,6 +141,7 @@ export default function Home() {
       </section>
 
       <section className="notes" id="notes">
+        <span className="ghost-num" aria-hidden="true">03</span>
         <div className="section-meta"><span>RECENT NOTES</span><span>03 / 05</span></div>
         <div className="notes-grid">
           <div className="notes-intro"><p className="eyebrow">持续写，持续想</p><h2>近期<br /><i>作品</i></h2><p>这里是一些还在生长的答案。</p></div>
@@ -124,6 +159,10 @@ export default function Home() {
       </section>
 
       <section className="contact" id="contact">
+        <span className="ghost-num" aria-hidden="true">04</span>
+        <svg className="ink-circle" viewBox="0 0 400 400" aria-hidden="true">
+          <circle cx="200" cy="200" r="148" fill="none" stroke="currentColor" strokeWidth="7" strokeLinecap="round" strokeDasharray="760 170" transform="rotate(30 200 200)" filter="url(#ink-rough)" />
+        </svg>
         <div className="section-meta"><span>LET’S CONNECT</span><span>04 / 05</span></div>
         <div className="contact-inner">
           <p className="contact-kicker">如果你也在思考 AI、医药商业或表达成长——</p>
@@ -134,6 +173,7 @@ export default function Home() {
       </section>
 
       <section className="social-strip" id="socials">
+        <span className="ghost-num" aria-hidden="true">05</span>
         <div className="social-strip-heading">
           <div><small>FOLLOW DACHENGZI</small><h2>在更多地方，找到大橙子🍊</h2></div>
           <span>05 / 05</span>
