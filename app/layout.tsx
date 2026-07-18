@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: { default: siteTitle, template: "%s | 大橙子🍊" },
   description: siteDescription,
   icons: { icon: `${siteUrl}/favicon.svg`, shortcut: `${siteUrl}/favicon.svg` },
+  alternates: { types: { "application/rss+xml": `${siteUrl}/feed.xml` } },
   openGraph: {
     title: siteTitle,
     description: "把真实的经验，变成可以行动的方法。",

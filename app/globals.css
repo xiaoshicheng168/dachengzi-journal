@@ -198,6 +198,28 @@ main > footer { background:var(--ink); color:#c9c1b5; border-top:1px solid rgba(
 .article-footer p { font:16px/1.8 var(--serif); margin:0; }
 .article-footer a { white-space:nowrap; color:var(--cinnabar); font-size:13px; }
 
+/* 上一篇 / 下一篇 */
+.article-nav { max-width:760px; margin:0 auto; padding:0 30px; display:grid; grid-template-columns:1fr 1fr; gap:40px; }
+.article-nav a { display:block; padding:28px 0; border-bottom:1px solid var(--line); transition:padding-left .25s,padding-right .25s; }
+.article-nav a:hover small { color:var(--cinnabar); }
+.article-nav a:hover span { color:var(--cinnabar); }
+.article-nav small { display:block; font:10px var(--latin); letter-spacing:.12em; color:var(--sage); margin-bottom:10px; transition:color .25s; }
+.article-nav a > span { font:20px/1.5 var(--serif); transition:color .25s; }
+.article-nav-newer { text-align:right; }
+.article-nav-older:hover { padding-left:10px; }
+.article-nav-newer:hover { padding-right:10px; }
+
+/* ————— 404 ————— */
+.not-found-hero { min-height:72vh; min-height:72svh; padding:80px 7vw 100px; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center; }
+.not-found-kicker { font:10px var(--latin); letter-spacing:.18em; color:var(--cinnabar); margin:0; }
+.not-found-hero h1 { font:500 clamp(52px,7vw,104px)/1.1 var(--serif); letter-spacing:-.05em; margin:34px 0 0; }
+.not-found-hero h1 i { color:var(--cinnabar); font-weight:400; }
+.not-found-copy { max-width:520px; font:17px/2 var(--serif); color:var(--sage); margin:36px 0 0; }
+.not-found-links { display:flex; gap:48px; margin-top:44px; font-size:13px; }
+.not-found-links a { border-bottom:1px solid var(--ink); padding-bottom:6px; transition:color .25s,border-color .25s; }
+.not-found-links a:hover { color:var(--cinnabar); border-color:var(--cinnabar); }
+.not-found-links span { color:var(--cinnabar); }
+
 /* ————— 移动端 ————— */
 @media(max-width:850px){
   .site-header{height:auto;padding:22px 5vw}
@@ -242,5 +264,7 @@ main > footer { background:var(--ink); color:#c9c1b5; border-top:1px solid rgba(
   .article-body blockquote{padding:28px 20px 24px 52px;font-size:21px}
   .article-footer{margin:65px 6vw 0;padding:35px 0;display:block}
   .article-footer a{display:inline-block;margin-top:25px}
+  .article-nav{grid-template-columns:1fr;gap:0;padding:0 6vw;margin-bottom:60px}
+  .article-nav-newer{text-align:left}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
