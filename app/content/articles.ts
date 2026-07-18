@@ -1,7 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export type ArticleBlock = { heading?: string; paragraphs: string[]; quote?: string };
+export type ArticleImage = { src: string; alt: string };
+
+export type ArticleBlock = {
+  heading?: string;
+  /** 已转义并含行内标签（strong/em/code/a）的 HTML 片段 */
+  paragraphs: string[];
+  quote?: string;
+  list?: string[];
+  image?: ArticleImage;
+};
 
 export type Article = {
   slug: string;
@@ -12,6 +21,34 @@ export type Article = {
   summary: string;
   blocks: ArticleBlock[];
 };
+
+/** 转义 HTML 特殊字符（在加行内标签之前执行） */
+function escapeHtml(text: string): string {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+/** 行内 Markdown：**粗体**、*斜体*、`代码`、[链接](https://…) */
+export function formatInline(text: string): string {
+  let s = escapeHtml(text);
+  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>");
+  s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+  s = s.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,
+    '<a href="$2" target="_blank" rel="noreferrer">$1</a>',
+  );
+  return s;
+}
+
+/** 站内图片（以 / 开头）在部署到子路径时需要加 basePath 前缀 */
+export function resolveImageSrc(src: string): string {
+  if (!src.startsWith("/")) return src;
+  return `${process.env.NEXT_PUBLIC_BASE_PATH || ""}${src}`;
+}
 
 const builtInArticles: Article[] = [
   {
@@ -94,6 +131,19 @@ const builtInArticles: Article[] = [
   },
 ];
 
+/** 内置文章的纯文本段落统一过一遍行内格式化，与 Markdown 文章行为一致 */
+function normalizeArticle(article: Article): Article {
+  return {
+    ...article,
+    blocks: article.blocks.map((block) => ({
+      ...block,
+      paragraphs: block.paragraphs.map(formatInline),
+      quote: block.quote ? formatInline(block.quote) : undefined,
+      list: block.list?.map(formatInline),
+    })),
+  };
+}
+
 function parseFrontmatter(source: string) {
   if (!source.startsWith("---")) return { data: {} as Record<string, string>, body: source };
   const end = source.indexOf("\n---", 3);
@@ -115,13 +165,19 @@ function markdownToBlocks(markdown: string): ArticleBlock[] {
   const blocks: ArticleBlock[] = [];
   let current: ArticleBlock = { paragraphs: [] };
   let paragraph: string[] = [];
+  let list: string[] = [];
   const flushParagraph = () => {
-    if (paragraph.length) current.paragraphs.push(paragraph.join(" "));
+    if (paragraph.length) current.paragraphs.push(formatInline(paragraph.join(" ")));
     paragraph = [];
+  };
+  const flushList = () => {
+    if (list.length) current.list = [...(current.list ?? []), ...list];
+    list = [];
   };
   const flushBlock = () => {
     flushParagraph();
-    if (current.heading || current.paragraphs.length || current.quote) blocks.push(current);
+    flushList();
+    if (current.heading || current.paragraphs.length || current.quote || current.list?.length || current.image) blocks.push(current);
     current = { paragraphs: [] };
   };
   for (const rawLine of markdown.split("\n")) {
@@ -132,21 +188,30 @@ function markdownToBlocks(markdown: string): ArticleBlock[] {
       current.heading = line.slice(3).trim();
       continue;
     }
+    const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/);
+    if (imageMatch) {
+      flushParagraph();
+      flushList();
+      current.image = { alt: imageMatch[1], src: imageMatch[2] };
+      continue;
+    }
+    if (/^[-*]\s+/.test(line)) {
+      flushParagraph();
+      list.push(formatInline(line.replace(/^[-*]\s+/, "")));
+      continue;
+    }
     if (line.startsWith("> ")) {
       flushParagraph();
-      current.quote = line.slice(2).trim();
+      flushList();
+      current.quote = formatInline(line.slice(2).trim());
       continue;
     }
     if (!line) {
       flushParagraph();
+      flushList();
       continue;
     }
-    paragraph.push(
-      line
-        .replace(/^[-*]\s+/, "• ")
-        .replace(/\*\*(.*?)\*\*/g, "$1")
-        .replace(/`([^`]+)`/g, "$1"),
-    );
+    paragraph.push(line);
   }
   flushBlock();
   return blocks;
@@ -176,7 +241,7 @@ function loadMarkdownArticles(): Article[] {
     });
 }
 
-const merged = new Map(builtInArticles.map((article) => [article.slug, article]));
+const merged = new Map(builtInArticles.map((article) => [article.slug, normalizeArticle(article)]));
 for (const article of loadMarkdownArticles()) merged.set(article.slug, article);
 export const articles = Array.from(merged.values()).sort((a, b) => b.date.localeCompare(a.date));
 

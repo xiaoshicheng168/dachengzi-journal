@@ -22,8 +22,14 @@ function articleHtml(article: Article): string {
     .map((block) => {
       const parts = [];
       if (block.heading) parts.push(`<h2>${escapeXml(block.heading)}</h2>`);
-      for (const paragraph of block.paragraphs) parts.push(`<p>${escapeXml(paragraph)}</p>`);
-      if (block.quote) parts.push(`<blockquote>${escapeXml(block.quote)}</blockquote>`);
+      // paragraphs / list / quote 已是转义后的行内 HTML，直接拼接
+      for (const paragraph of block.paragraphs) parts.push(`<p>${paragraph}</p>`);
+      if (block.list?.length) parts.push(`<ul>${block.list.map((item) => `<li>${item}</li>`).join("")}</ul>`);
+      if (block.image) {
+        const src = block.image.src.startsWith("/") ? `${siteUrl}${block.image.src}` : block.image.src;
+        parts.push(`<figure><img src="${escapeXml(src)}" alt="${escapeXml(block.image.alt)}"/></figure>`);
+      }
+      if (block.quote) parts.push(`<blockquote>${block.quote}</blockquote>`);
       return parts.join("");
     })
     .join("");

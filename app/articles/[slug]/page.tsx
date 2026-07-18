@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { articles, getArticle } from "../../content/articles";
+import { articles, getArticle, resolveImageSrc } from "../../content/articles";
 import { siteUrl, authorName, ogImage, toISODate } from "../../content/site";
 
 export function generateStaticParams() { return articles.map(({ slug }) => ({ slug })); }
@@ -51,7 +51,22 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <header className="article-hero"><span className="article-vertical" aria-hidden="true">{article.category}</span><p>{article.category} · {article.date}</p><h1>{article.title}</h1><div><span>{article.readingTime}</span><span>BY 大橙子🍊</span></div></header>
         <p className="article-deck">{article.summary}</p>
         <div className="article-body">
-          {article.blocks.map((block, index) => <section key={index}>{block.heading && <h2>{block.heading}</h2>}{block.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}{block.quote && <blockquote>{block.quote}</blockquote>}</section>)}
+          {article.blocks.map((block, index) => (
+            <section key={index}>
+              {block.heading && <h2>{block.heading}</h2>}
+              {block.paragraphs.map((paragraph, i) => <p key={i} dangerouslySetInnerHTML={{ __html: paragraph }} />)}
+              {block.list && <ul>{block.list.map((item, i) => <li key={i} dangerouslySetInnerHTML={{ __html: item }} />)}</ul>}
+              {block.image && (
+                <figure>
+                  {/* 静态导出站点 images.unoptimized 为 true，next/image 无优化收益，使用原生 img */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={resolveImageSrc(block.image.src)} alt={block.image.alt} loading="lazy" />
+                  {block.image.alt && <figcaption>{block.image.alt}</figcaption>}
+                </figure>
+              )}
+              {block.quote && <blockquote dangerouslySetInnerHTML={{ __html: block.quote }} />}
+            </section>
+          ))}
         </div>
         <footer className="article-footer"><p>这是大橙子🍊的一篇思考手记。<br />如果它也让你想到了什么，欢迎来聊。</p><Link href="/articles">继续阅读 →</Link></footer>
         <nav className="article-nav" aria-label="文章导航">
