@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { articles } from "./content/articles";
+import type { CSSProperties } from "react";
+import { articles, moduleStats } from "./content/articles";
 import { siteUrl, siteDescription, authorName } from "./content/site";
+import { getModule, contentTypeLabel, primaryModules } from "./content/modules";
 
 const NOTE_MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
@@ -9,33 +11,22 @@ function formatNoteDate(date: string) {
   return year && month ? `${NOTE_MONTHS[Number(month) - 1]} ${year}` : date;
 }
 
-const notes = articles.slice(0, 3).map((article) => ({
+const notes = articles.slice(0, 4).map((article) => ({
   date: formatNoteDate(article.date),
   title: article.title,
-  kind: article.category,
+  summary: article.summary,
   href: `/articles/${article.slug}`,
+  moduleName: getModule(article.module)?.name ?? "手记",
+  accent: getModule(article.module)?.accent ?? "#6e7864",
+  typeLabel: contentTypeLabel(article.type),
 }));
 
-const work = [
-  {
-    number: "01",
-    title: "AI 共创与知识生产",
-    copy: "把 AI 变成可以一起思考、整理和创造的长期伙伴。",
-    tag: "CO-CREATION",
-  },
-  {
-    number: "02",
-    title: "医药商业观察",
-    copy: "穿过专业术语和业务数字，找到真正影响决策的人与问题。",
-    tag: "PHARMA",
-  },
-  {
-    number: "03",
-    title: "表达成长实践",
-    copy: "从一次演讲、一段对话开始，练习更清晰、更真诚的表达。",
-    tag: "EXPRESSION",
-  },
-];
+/** 模块卡直接读 modules.ts，新增模块不需要改页面代码 */
+const moduleCards = primaryModules.map((item) => ({
+  ...item,
+  href: `/modules/${item.key}`,
+  count: moduleStats(item.key).total,
+}));
 
 const socialLinks = [
   { label: "抖音", note: "DOUYIN", href: "" },
@@ -76,10 +67,10 @@ export default function Home() {
         </a>
         <nav aria-label="主导航">
           <a href="#about">关于我</a>
-          <a href="#work">我在做的事</a>
+          <Link href="/modules">模块</Link>
           <a href="#notes">近期作品</a>
+          <Link href="/articles">全部作品</Link>
           <a href="#contact">联系我</a>
-          <a href="#socials">社交主页</a>
         </nav>
       </header>
 
@@ -121,23 +112,29 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="work" id="work">
+      <section className="module-section" id="work">
         <span className="ghost-num" aria-hidden="true">02</span>
-        <div className="section-meta"><span>CURRENT PRACTICE</span><span>02 / 05</span></div>
+        <div className="section-meta"><span>MODULES / 模块</span><span>02 / 05</span></div>
         <div className="section-heading">
-          <h2>我在做的事</h2>
-          <p>三条线索，最后都回到同一件事：<br />帮助人看见问题，也看见自己。</p>
+          <h2>五个正在生长的工作主线</h2>
+          <p>每周自动产出新的设计内容与思考，按模块沉淀、复盘与检索。</p>
         </div>
-        <div className="work-list">
-          {work.map((item) => (
-            <article key={item.number}>
-              <span className="work-number">{item.number}</span>
-              <div><p className="work-tag">{item.tag}</p><h3>{item.title}</h3></div>
+        <div className="module-grid">
+          {moduleCards.map((item) => (
+            <Link className="module-card" href={item.href} key={item.key} style={{ "--accent": item.accent } as CSSProperties}>
+              <span className="module-card-num">{item.number}</span>
+              <span className="module-card-tag">{item.en}</span>
+              <h3>{item.name}</h3>
               <p>{item.copy}</p>
-              <span className="work-arrow" aria-hidden="true">↘</span>
-            </article>
+              <span className="module-card-foot">
+                <span className="module-card-count">{item.count} 篇 · {item.cadence}</span>
+                <span className="module-card-arrow" aria-hidden="true">↘</span>
+              </span>
+              <span className="module-ghost" aria-hidden="true">{item.number}</span>
+            </Link>
           ))}
         </div>
+        <Link className="module-all" href="/modules">查看全部模块 <span>→</span></Link>
       </section>
 
       <section className="notes" id="notes">
@@ -147,9 +144,13 @@ export default function Home() {
           <div className="notes-intro"><p className="eyebrow">持续写，持续想</p><h2>近期<br /><i>作品</i></h2><p>这里是一些还在生长的答案。</p></div>
           <div className="note-list">
             {notes.map((note, index) => (
-              <Link href={note.href} key={note.title}>
+              <Link href={note.href} key={note.href}>
                 <span className="note-date">{note.date}</span>
-                <span className="note-title"><small>{note.kind}</small>{note.title}</span>
+                <span className="note-chips">
+                  <span className="chip" style={{ background: note.accent }}>{note.moduleName}</span>
+                  <span className="chip chip-plain">{note.typeLabel}</span>
+                </span>
+                <span className="note-title">{note.title}<small className="note-sum">{note.summary}</small></span>
                 <span className="note-index">0{index + 1} ↗</span>
               </Link>
             ))}

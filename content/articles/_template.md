@@ -2,6 +2,13 @@
 title: "这里填文章标题"
 slug: "article-url-in-english"
 date: "2026.07.14"
+# 模块（一级分类，必填）：写入 modules.ts 里存在的 key
+module: "ai-brain"
+# 内容类型（必填）：design 设计作品 / thinking 思考手记 / method 方法卡 / review 周复盘
+type: "thinking"
+# 设计作品必填封面（文件放 public/images/），思考类可留空
+cover: ""
+tags: ["标签一", "标签二"]
 category: "AI 共创"
 readingTime: "5 MIN READ"
 summary: "这里填一句话摘要，会显示在文章列表中。"

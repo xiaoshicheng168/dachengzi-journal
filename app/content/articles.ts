@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fallbackFor, type ContentTypeKey } from "./modules";
 
 export type ArticleImage = { src: string; alt: string };
 
@@ -16,6 +17,13 @@ export type Article = {
   slug: string;
   title: string;
   category: string;
+  /** 一级模块，对应 modules.ts 的 key */
+  module: string;
+  /** 内容类型：design / thinking / method / review */
+  type: ContentTypeKey;
+  /** 封面图（设计作品必填），站内路径以 / 开头 */
+  cover?: string;
+  tags: string[];
   date: string;
   readingTime: string;
   summary: string;
@@ -50,7 +58,10 @@ export function resolveImageSrc(src: string): string {
   return `${process.env.NEXT_PUBLIC_BASE_PATH || ""}${src}`;
 }
 
-const builtInArticles: Article[] = [
+/** 内置文章没有 frontmatter，module/type 由 category 兜底补全 */
+type BuiltInArticle = Omit<Article, "module" | "type" | "tags"> & Partial<Pick<Article, "module" | "type" | "tags">>;
+
+const builtInArticles: BuiltInArticle[] = [
   {
     slug: "why-a-pharma-person-started-using-ai",
     title: "一个医药人，为什么开始认真用 AI",
@@ -131,10 +142,14 @@ const builtInArticles: Article[] = [
   },
 ];
 
-/** 内置文章的纯文本段落统一过一遍行内格式化，与 Markdown 文章行为一致 */
-function normalizeArticle(article: Article): Article {
+/** 内置文章的纯文本段落统一过一遍行内格式化，并补全 module/type（内置文章没有 frontmatter） */
+function normalizeArticle(article: BuiltInArticle): Article {
+  const fallback = fallbackFor(article.category);
   return {
     ...article,
+    module: article.module || fallback.module,
+    type: article.type || fallback.type,
+    tags: article.tags ?? [],
     blocks: article.blocks.map((block) => ({
       ...block,
       paragraphs: block.paragraphs.map(formatInline),
@@ -217,6 +232,18 @@ function markdownToBlocks(markdown: string): ArticleBlock[] {
   return blocks;
 }
 
+/** 解析 frontmatter 里的 tags：[a, b] / a, b / ["a","b"] 都能吃 */
+function parseTags(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .replace(/^\[|\]$/g, "")
+    .split(",")
+    .map((item) => item.trim().replace(/^['"]|['"]$/g, ""))
+    .filter(Boolean);
+}
+
+const contentTypesKeys: ContentTypeKey[] = ["design", "thinking", "method", "review"];
+
 function loadMarkdownArticles(): Article[] {
   const directory = path.join(process.cwd(), "content", "articles");
   if (!fs.existsSync(directory)) return [];
@@ -226,10 +253,17 @@ function loadMarkdownArticles(): Article[] {
     .map((name) => {
       const source = fs.readFileSync(path.join(directory, name), "utf8");
       const { data, body } = parseFrontmatter(source);
+      const category = data.category || "思考手记";
+      const fallback = fallbackFor(category);
+      const type = (data.type as ContentTypeKey) || fallback.type;
       return {
         slug: data.slug || name.replace(/\.md$/, ""),
         title: data.title || name.replace(/\.md$/, ""),
-        category: data.category || "思考手记",
+        category,
+        module: data.module || fallback.module,
+        type: contentTypesKeys.includes(type) ? type : fallback.type,
+        cover: data.cover || undefined,
+        tags: parseTags(data.tags),
         date: data.date || "",
         readingTime: data.readingTime || "5 MIN READ",
         summary:
@@ -247,4 +281,20 @@ export const articles = Array.from(merged.values()).sort((a, b) => b.date.locale
 
 export function getArticle(slug: string) {
   return articles.find((article) => article.slug === slug);
+}
+
+export function getArticlesByModule(moduleKey: string): Article[] {
+  return articles.filter((article) => article.module === moduleKey);
+}
+
+export function getArticlesByType(type: string): Article[] {
+  return articles.filter((article) => article.type === type);
+}
+
+/** 模块库存：总数 + 各类型数量，用于模块页与首页卡片 */
+export function moduleStats(moduleKey: string) {
+  const list = getArticlesByModule(moduleKey);
+  const byType: Record<string, number> = {};
+  for (const article of list) byType[article.type] = (byType[article.type] ?? 0) + 1;
+  return { total: list.length, byType, latest: list[0]?.date ?? "" };
 }
